@@ -111,7 +111,6 @@ void move_enemy(Enemy_Object *R, BITMAP *enemy ,BITMAP *buffer){
 	
 	while(Aux != NULL){
 		masked_blit(enemy, buffer, Aux->swx + 0 * 127, Aux->swy, Aux->bx, Aux->by, Aux->pw, Aux->ph);
-		printf("%d\n", R->id);
 		Aux = Aux->right;
 	}
 }
@@ -205,6 +204,8 @@ int main(){
 	destroy_bitmap(enemy);
 	destroy_bitmap(background);
 	clear(Root);
+	printf("To aqui!!\n");
+	printf("%d\n", Root->id);
 
 	return 0;
 }
