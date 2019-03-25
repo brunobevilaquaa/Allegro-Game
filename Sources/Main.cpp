@@ -226,4 +226,4 @@ void control(){
 
 
 
-//g++ -o Main Main.cpp `allegro-config --libs`
+//g++ -o Main.bin Main.cpp `allegro-config --libs`
