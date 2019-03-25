@@ -187,8 +187,6 @@ int main(){
 
 			move_enemy(Root, enemy, buffer);
 			
-			//printf("%d\n", Root->id);
-
 			//masked_blit(enemy, buffer, Enemy.swx + sprite_enemy * 127, Enemy.swy, Enemy.bx, Enemy.by, Enemy.pw, Enemy.ph);
 		}
 
