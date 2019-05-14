@@ -73,7 +73,7 @@ int main(){
 	BITMAP *buffer      = create_bitmap(900, 600);
 	BITMAP *player      = load_bitmap("../Sprites/Game/player1.bmp", 			NULL);
 	BITMAP *enemy       = load_bitmap("../Sprites/Game/enemy1.bmp",       NULL);
-	BITMAP *enemy_hit   = load_bitmap("../Sprites/Game/enemy_hit.bmp",    NULL);
+	BITMAP *enemy_hit   = load_bitmap("../Sprites/Game/enemy_hit1.bmp",    NULL);
 	BITMAP *background  = load_bitmap("../Sprites/Game/background_1.bmp", NULL);
 	BITMAP *sprite_Shot = load_bitmap("../Sprites/Game/fire1.bmp", 				NULL);
 
@@ -211,7 +211,7 @@ void move_enemy(BITMAP *enemy, BITMAP *enemy_hit, BITMAP *buffer){
 					sort();
 			}
 
-			if(colid(enemies[i].bx, enemies[i].by, Player.bx, Player.by, enemies[i].ow, enemies[i].oh, Player.ow, Player.oh)){
+			if(colid(enemies[i].bx, enemies[i].by, Player.bx, Player.by, enemies[i].ow, enemies[i].oh, Player.ow - 10, Player.oh - 10)){
 					masked_blit(enemy_hit, buffer, enemies[i].sx + enemies[i].mov * 100, enemies[i].sy, enemies[i].bx, enemies[i].by, enemies[i].ow, enemies[i].oh);
 					enemies.erase(enemies.begin() + i);
 					sort();
