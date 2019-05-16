@@ -57,9 +57,10 @@ int play = 0;
 int menu = 0;
 
 //Variables of game
-int fps  = 90;
-int life =  5;
-
+int fps    = 90;
+int life   =  5;
+int score  =  0;
+int hscore = 	0;
 int main(){
 	//Inicialization
 	allegro_init();
@@ -69,23 +70,26 @@ int main(){
 	set_gfx_mode(GFX_AUTODETECT_WINDOWED, 900, 600, 0, 0);
 	set_window_title("Zombie Invader");
 
+	//Fonts
+	FONT 	 *font				= load_font("../Fonts/font.pcx", NULL, NULL);
+
 	//Load Bitmaps Game
 	BITMAP *buffer      = create_bitmap(900, 600);
 	BITMAP *player      = load_bitmap("../Sprites/Game/player1.bmp", 			NULL);
 	BITMAP *enemy       = load_bitmap("../Sprites/Game/enemy1.bmp",       NULL);
-	BITMAP *enemy_hit   = load_bitmap("../Sprites/Game/enemy_hit1.bmp",    NULL);
+	BITMAP *enemy_hit   = load_bitmap("../Sprites/Game/enemy_hit1.bmp",   NULL);
 	BITMAP *background  = load_bitmap("../Sprites/Game/background_1.bmp", NULL);
 	BITMAP *sprite_Shot = load_bitmap("../Sprites/Game/fire1.bmp", 				NULL);
 
 	//Load Bitmaps Menu;
-	BITMAP *menu_play    = load_bitmap("../Sprites/Menu/menu_play.bmp", NULL);
+	BITMAP *menu_play    = load_bitmap("../Sprites/Menu/menu_play.bmp",    NULL);
 	BITMAP *menu_options = load_bitmap("../Sprites/Menu/menu_options.bmp", NULL);
-	BITMAP *menu_quit    = load_bitmap("../Sprites/Menu/menu_quit.bmp", NULL);
+	BITMAP *menu_quit    = load_bitmap("../Sprites/Menu/menu_quit.bmp",    NULL);
 
 	//Game function;
 	while(!key[KEY_ESC]){
 		if(play == 0){
-				 if(key[KEY_UP]    && menu > 0) menu-= 1;
+				   if(key[KEY_UP]    && menu > 0) menu-= 1;
 			else if(key[KEY_DOWN]  && menu < 2) menu+= 1;
 			else if(key[KEY_ENTER]){
 				 if(menu == 0){play = 1; fps = 30; life = 5;}
@@ -106,6 +110,17 @@ int main(){
 			masked_blit(player, buffer, Player.sx + move_Sprite_Player * 150, Player.sy + player_Direction * 117, Player.bx, Player.by, Player.ow, Player.oh);
 			masked_blit(sprite_Shot, buffer, fire.sx, fire.sy, fire.bx, fire.by, fire.ow, fire.oh);
 
+			textprintf_ex(buffer, font, 400, 10, 0xffffff, -1, "SCORE");
+
+			if(!hscore && !score){
+					textprintf_ex(buffer, font, 600, 10, 0xffffff, -1, "000 000");
+			} else {
+					textprintf_right_ex(buffer, font, 700, 10, 0xffffff, -1, " %i", score);
+					if(!hscore) textprintf_ex(buffer, font, 773, 10, 0xffffff, -1, "000");
+					else textprintf_ex(buffer, font, 773, 10, 0xffffff, -1, " %i", hscore);
+			}
+
+
 			if(rand() % 20 + 1 == 10){
 				create_enemy();
 			}
@@ -114,6 +129,7 @@ int main(){
 				play = 0;
 				enemies.clear();
 				fps = 90;
+				hscore = score;
 			}
 
 		}
@@ -128,6 +144,7 @@ int main(){
 	destroy_bitmap(player);
 	destroy_bitmap(enemy);
 	destroy_bitmap(background);
+	destroy_font(font);
 
 	return 0;
 }
@@ -135,10 +152,10 @@ END_OF_MAIN();
 
 //Function for player control
 void control(){
-		   if(key[KEY_RIGHT] && Player.bx < 800) {Player.bx += 10; player_Direction = 3; move_Sprite_Player++;}
-	else if(key[KEY_LEFT]  && Player.bx > 220) {Player.bx -= 10; player_Direction = 2; move_Sprite_Player++;}
-	else if(key[KEY_DOWN]  && Player.by < 480) {Player.by += 10; player_Direction = 0; move_Sprite_Player++;}
-	else if(key[KEY_UP]    && Player.by >  20) {Player.by -= 10; player_Direction = 1; move_Sprite_Player++;}
+		   if(key[KEY_RIGHT] && Player.bx < 800) {Player.bx += 12; player_Direction = 3; move_Sprite_Player++;}
+	else if(key[KEY_LEFT]  && Player.bx > 220) {Player.bx -= 12; player_Direction = 2; move_Sprite_Player++;}
+	else if(key[KEY_DOWN]  && Player.by < 480) {Player.by += 12; player_Direction = 0; move_Sprite_Player++;}
+	else if(key[KEY_UP]    && Player.by >  20) {Player.by -= 12; player_Direction = 1; move_Sprite_Player++;}
 	else if(key[KEY_SPACE] && gun_Cooldown   <= 0){gun_Shot = 1; fire.bx = Player.bx + 33; fire.by = Player.by + 52; gun_Cooldown = 15;}
 	else{move_Sprite_Player = 0; player_Direction = 3;}
 
@@ -167,7 +184,7 @@ void create_enemy(){
 		enemy_Object aux;
 
 		int ry = rand() % 5 + 1;
-		int rx = rand() % 1;
+		int rx = rand() % 3 + 1;
 
 		aux.id  =   0;
 		aux.bx  =   900 + rx * 100;
@@ -206,7 +223,9 @@ void move_enemy(BITMAP *enemy, BITMAP *enemy_hit, BITMAP *buffer){
 
 			if(colid(enemies[i].bx, enemies[i].by, fire.bx, fire.by, enemies[i].ow, enemies[i].oh, fire.ow, fire.oh)){
 					masked_blit(enemy_hit, buffer, enemies[i].sx + enemies[i].mov * 100, enemies[i].sy, enemies[i].bx, enemies[i].by, enemies[i].ow, enemies[i].oh);
-					gun_Shot = 0;
+					gun_Shot 			= 0;
+					gun_Cooldown -= 3;
+					score  		 += 1;
 					enemies.erase(enemies.begin() + i);
 					sort();
 			}
