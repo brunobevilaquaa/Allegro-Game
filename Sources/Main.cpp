@@ -55,9 +55,10 @@ int spawn_Place_X  = 0;
 //Variables of menu
 int play = 0;
 int menu = 0;
+int cred = 0;
 
 //Variables of game
-int fps    = 90;
+int fps    = 80;
 int life   =  5;
 int score  =  0;
 int hscore = 	0;
@@ -80,11 +81,13 @@ int main(){
 	BITMAP *enemy_hit   = load_bitmap("../Sprites/Game/enemy_hit1.bmp",   NULL);
 	BITMAP *background  = load_bitmap("../Sprites/Game/background_1.bmp", NULL);
 	BITMAP *sprite_Shot = load_bitmap("../Sprites/Game/fire1.bmp", 				NULL);
+	BITMAP *life_heart = load_bitmap("../Sprites/Game/life_heart.bmp",         NULL);
 
 	//Load Bitmaps Menu;
 	BITMAP *menu_play    = load_bitmap("../Sprites/Menu/menu_play.bmp",    NULL);
-	BITMAP *menu_options = load_bitmap("../Sprites/Menu/menu_options.bmp", NULL);
+	BITMAP *menu_credits = load_bitmap("../Sprites/Menu/menu_credits.bmp", NULL);
 	BITMAP *menu_quit    = load_bitmap("../Sprites/Menu/menu_quit.bmp",    NULL);
+	BITMAP *credits      = load_bitmap("../Sprites/Menu/credits.bmp",      NULL);
 
 	//Game function;
 	while(!key[KEY_ESC]){
@@ -92,14 +95,18 @@ int main(){
 				   if(key[KEY_UP]    && menu > 0) menu-= 1;
 			else if(key[KEY_DOWN]  && menu < 2) menu+= 1;
 			else if(key[KEY_ENTER]){
-				 if(menu == 0){play = 1; fps = 30; life = 5;}
-				 if(menu == 2) break;
-			}
+				 	    if(menu == 0) {play = 1; fps = 20; life = 5; score = 0;}
+		  	 else if(menu == 1) {menu = 3;}
+				 else if(menu == 2) break;
+				 }
 
 					 if(menu == 0) masked_blit(menu_play, buffer,    0, 0, 0, 0, 900, 600);
-			else if(menu == 1) masked_blit(menu_options, buffer, 0, 0, 0, 0, 900, 600);
+			else if(menu == 1) masked_blit(menu_credits, buffer, 0, 0, 0, 0, 900, 600);
 			else if(menu == 2) masked_blit(menu_quit, buffer,    0, 0, 0, 0, 900, 600);
-
+			else if(menu == 3 and !key[KEY_ENTER]){
+					 masked_blit(credits, buffer, 0, 0, 0, 0, 900, 600);
+					 if(key[KEY_ENTER]) menu = 0;
+			}
 		}
 
 		else{
@@ -112,12 +119,18 @@ int main(){
 
 			textprintf_ex(buffer, font, 400, 10, 0xffffff, -1, "SCORE");
 
+			if(score == 100) life = 5;
+
+			for(int x = 0; x < life; x++){
+					masked_blit(life_heart, buffer, 0, 0, 20 + x * 50 , 10, 40, 35);
+			}
+
 			if(!hscore && !score){
 					textprintf_ex(buffer, font, 600, 10, 0xffffff, -1, "000 000");
 			} else {
 					textprintf_right_ex(buffer, font, 700, 10, 0xffffff, -1, " %i", score);
 					if(!hscore) textprintf_ex(buffer, font, 773, 10, 0xffffff, -1, "000");
-					else textprintf_ex(buffer, font, 773, 10, 0xffffff, -1, " %i", hscore);
+					else textprintf_right_ex(buffer, font, 873, 10, 0xffffff, -1, " %i", hscore);
 			}
 
 
@@ -144,6 +157,11 @@ int main(){
 	destroy_bitmap(player);
 	destroy_bitmap(enemy);
 	destroy_bitmap(background);
+	destroy_bitmap(life_heart);
+	destroy_bitmap(menu_play);
+	destroy_bitmap(menu_quit);
+	destroy_bitmap(menu_credits);
+	destroy_bitmap(credits);
 	destroy_font(font);
 
 	return 0;
@@ -198,9 +216,6 @@ void create_enemy(){
 		enemies.push_back(aux);
 
 		sort();
-
-		cout << "BOTEEEEIII" << endl;
-		cout << "NUMERO DE ZOMBIE: " << enemies.size() << endl;
 }
 
 int colid(int Ax, int Ay, int Bx, int By, int Aw, int Ah, int Bw, int Bh){
@@ -225,7 +240,7 @@ void move_enemy(BITMAP *enemy, BITMAP *enemy_hit, BITMAP *buffer){
 					masked_blit(enemy_hit, buffer, enemies[i].sx + enemies[i].mov * 100, enemies[i].sy, enemies[i].bx, enemies[i].by, enemies[i].ow, enemies[i].oh);
 					gun_Shot 			= 0;
 					gun_Cooldown -= 3;
-					score  		 += 1;
+					score  		   += 1;
 					enemies.erase(enemies.begin() + i);
 					sort();
 			}
@@ -235,16 +250,13 @@ void move_enemy(BITMAP *enemy, BITMAP *enemy_hit, BITMAP *buffer){
 					enemies.erase(enemies.begin() + i);
 					sort();
 					life -= 1;
+					score += 1;
 			}
 
 		} else{
 			enemies.erase(enemies.begin() + i);
 			life -= 1;
-			cout << life << endl;
 			sort();
-
-			cout << "TIREIIII" << endl;
-			cout << "NUMERO DE ZOMBIE: " << enemies.size() << endl;
 		}
 	}
 }
